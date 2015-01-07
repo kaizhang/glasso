@@ -10,15 +10,16 @@
  */
 void hugeglasso(const double *S, double *W, double *T, int d, double ilambda) 
 {
+
     int d2;
     d2 = d*d;
+
     
     int i,j,k; //initialize indices
     int rss_idx,w_idx;
     int tmp_i;
     int tmp_j,tmp_a;
-    
-    
+
     int gap_int;
     double gap_ext,gap_act;
     double thol_act = 1e-4;

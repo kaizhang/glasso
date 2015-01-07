@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                glasso
-version:             0.1.0
+version:             0.1.1
 -- synopsis:            
 -- description:         
 license:             BSD3
@@ -21,7 +21,7 @@ library
 
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8, vector
+  build-depends:       base >=4.7 && <4.8, vector, matrices
   hs-source-dirs:      src
   c-sources: cbits/hugeglasso.c
   default-language:    Haskell2010
