@@ -18,7 +18,6 @@ module Algorithms.GLasso
     , glasso'
     ) where
 
-import qualified Data.Matrix.Storable as M
 import qualified Data.Vector.Storable as V
 import Foreign
 import Foreign.C
@@ -32,22 +31,21 @@ foreign import ccall "hugeglasso"
              -> CDouble      -- ^ lambda, penalty term
              -> IO ()
 
-glasso :: M.Matrix Double
+glasso :: Int
+       -> V.Vector Double
        -> Double
-       -> (M.Matrix Double, M.Matrix Double)
-glasso s lambda = unsafePerformIO $
-    V.unsafeWith (V.map realToFrac . M.flatten $ s) $ \sp -> do
+       -> (V.Vector Double, V.Vector Double)
+glasso d vec lambda = unsafePerformIO $
+    V.unsafeWith (V.map realToFrac vec) $ \vp -> do
         wp <- mallocArray (d*d)
-        copyArray wp sp (d*d)
+        copyArray wp vp (d*d)
         tp <- ident d
-        c_glasso sp wp tp (fromIntegral d) (realToFrac lambda)
+        c_glasso vp wp tp (fromIntegral d) (realToFrac lambda)
         wp' <- newForeignPtr_ wp
         tp' <- newForeignPtr_ tp
-        let cov = M.fromVector (d,d) . V.map realToFrac $ V.unsafeFromForeignPtr0 wp' (d*d)
-            icov = M.fromVector (d,d) . V.map realToFrac $ V.unsafeFromForeignPtr0 tp' (d*d)
+        let cov = V.map realToFrac $ V.unsafeFromForeignPtr0 wp' (d*d)
+            icov = V.map realToFrac $ V.unsafeFromForeignPtr0 tp' (d*d)
         return (cov, icov)
-  where
-    d = M.rows s
 
 glasso' :: [Double]    -- ^ row-major correlation matrix
         -> Int         -- ^ dimension of the matrix
