@@ -46,12 +46,13 @@ glasso d vec lambda = unsafePerformIO $
         let cov = V.map realToFrac $ V.unsafeFromForeignPtr0 wp' (d*d)
             icov = V.map realToFrac $ V.unsafeFromForeignPtr0 tp' (d*d)
         return (cov, icov)
+{-# INLINE glasso #-}
 
-glasso' :: [Double]    -- ^ row-major correlation matrix
-        -> Int         -- ^ dimension of the matrix
+glasso' :: Int         -- ^ dimension of the matrix
+        -> [Double]    -- ^ row-major correlation matrix
         -> Double      -- ^ LASSO parameter
         -> ([Double], [Double])     -- ^ estimated covariance matrix and its inverse
-glasso' s d lambda = unsafePerformIO $ withArray (map realToFrac s) $ \sp -> do
+glasso' d s lambda = unsafePerformIO $ withArray (map realToFrac s) $ \sp -> do
         wp <- mallocArray (d*d)
         copyArray wp sp (d*d)
         tp <- ident d
@@ -59,6 +60,7 @@ glasso' s d lambda = unsafePerformIO $ withArray (map realToFrac s) $ \sp -> do
         w <- peekArray (d*d) wp
         t <- peekArray (d*d) tp
         return (map realToFrac w, map realToFrac t)
+{-# INLINE glasso' #-}
 
 -- | create an identity matrix
 ident :: Int -> IO (Ptr CDouble)
